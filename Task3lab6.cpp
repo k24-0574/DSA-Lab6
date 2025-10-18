@@ -17,29 +17,64 @@ using namespace std;
 class Order{
     int numItems;
     string *itemName;
-    int *amounnt;
+    int *amount;
+    public:
+    Order(int numItems, string items[], int amounts[]){
+        this->numItems = numItems;
+        itemName = new string[numItems];
+        amount = new int[numItems];
+
+        for(int i =0;i<numItems;i++){
+            amount[i] = amounts[i];
+            itemName[i] = items[i];
+        }
+    }
+    ~Order(){
+        delete[] itemName;
+        delete[] amount;
+    }
 };
 
 class Node{
+    public:
     Node*next;
     Order* data;
+    Node(Order* o){
+        data = o;
+        next = nullptr;
+    }
 };
 
 class Queue{
     Node* front, *rear;
-    int curr=0, cap;
+    int curr, cap;
     public:
-    Queue(){
+    Queue(int cap){
         front = rear = nullptr;
+        this->cap = cap;
+        curr=0;
     }
 
     void enqueue(Order* o){
-        //add order to rear
+        if(isFull) return;
+        Node* newnode = new Node(o);
+        if(front == nullptr){
+            front = rear = newnode;
+        }
+        else{
+            //add order to rear
+            rear->next = newnode;
+            rear = newnode;
+        }
         curr++;
     }
 
     void dequeue(){
+        if(isEmpty()) return;
         //remove order from front
+        Node* temp = front;
+        front = front->next;
+        delete temp;
         curr--;
     }
 

@@ -2,12 +2,105 @@
 using namespace std;
 #include <cstdlib>
 #include <ctime>
+#include <string>
+
+
+class NumStack {
+    double arr[50];
+    int top;
+public:
+    NumStack() {top =-1;}
+
+    void push(double val) {
+        if(top<49) arr[++top]=val;
+    }
+    double pop() {
+        if (top>=0) return arr[top--];
+        return 0; // safety
+    }
+    bool isEmpty(){ return top==-1; }
+};
+
 
 class Transaction{
     int ID;
     int amount;
     string description;
     bool flag;
+
+    int precedence(char op){
+        if (op == '+' || op == '-') return 1;
+        if (op == '*' || op == '/') return 2;
+        return 0;
+    }
+
+    string infixToPostfix(const string &expr){
+        char opStack[50];
+        int top = -1;
+        string postfix = "";
+
+        for (size_t i = 0; i < expr.size(); i++){
+            char c = expr[i];
+            if (isdigit(c) || c =='.'){
+                postfix += c;} 
+            else if (c ==' '){
+                postfix +=' '; } 
+            else if (c =='('){
+                opStack[++top] = c;} 
+            else if (c ==')'){
+                postfix += ' ';
+                while (top >= 0 && opStack[top] != '(') {
+                    postfix += opStack[top--];
+                    postfix += ' ';
+                }
+                top--;
+            }
+            else if(c == '+' || c == '-' || c == '*' || c == '/'){
+                postfix += ' ';
+                while (top >= 0 && precedence(opStack[top]) >= precedence(c)) {
+                    postfix += opStack[top--];
+                    postfix += ' ';
+                }
+                opStack[++top] = c;
+            }
+        }
+
+        while(top>=0){
+            postfix+= ' ';
+            postfix+=opStack[top--];
+        }
+        return postfix;
+    }
+
+    double evalPostfix(const string &postfix){
+        NumStack st;
+        string token = "";
+
+        for(char c : postfix){
+            if(isdigit(c) || c == '.'){
+                token += c;} 
+            else if(c == ' '){
+                if(!token.empty()){
+                    st.push(stod(token));
+                    token.clear();
+                }
+            } 
+            else if(c == '+' || c == '-' || c == '*' || c == '/'){
+                double b = st.pop();
+                double a = st.pop();
+                double res = 0;
+                if (c == '+') res = a + b;
+                else if (c == '-') res = a - b;
+                else if (c == '*') res = a * b;
+                else if (c == '/') res = a / b;
+                st.push(res);
+            }
+        }
+
+        if (!token.empty()) st.push(stod(token));
+        return st.pop();
+    }
+    
     public:
     Transaction(int a, string d){
         ID = 0;
@@ -156,7 +249,6 @@ int main(){
     }
 
     store.display();
-
 
     for(int i=0;i<4;i++) delete Items[i];
     delete[] Items;

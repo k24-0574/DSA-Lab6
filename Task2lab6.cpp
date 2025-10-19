@@ -5,18 +5,18 @@ using namespace std;
 #include <string>
 
 
-class NumStack {
+class NumStack{
     double arr[50];
     int top;
 public:
     NumStack() {top =-1;}
 
-    void push(double val) {
+    void push(double val){
         if(top<49) arr[++top]=val;
     }
-    double pop() {
+    double pop(){
         if (top>=0) return arr[top--];
-        return 0; // safety
+        return 0; 
     }
     bool isEmpty(){ return top==-1; }
 };
@@ -39,7 +39,7 @@ class Transaction{
         int top = -1;
         string postfix = "";
 
-        for (size_t i = 0; i < expr.size(); i++){
+        for (int i = 0; i < expr.size(); i++){
             char c = expr[i];
             if (isdigit(c) || c =='.'){
                 postfix += c;} 
@@ -255,3 +255,4 @@ int main(){
 
     return 0;
 }
+
